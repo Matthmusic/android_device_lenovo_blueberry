@@ -66,14 +66,21 @@ jobs:
         # check_radio_versions.py: Python 2 print syntax, no radio images needed for recovery
         CHECKRADIO="twrp_source/build/tools/check_radio_versions.py"
         [ -f "$CHECKRADIO" ] && printf "$NOOP" > "$CHECKRADIO" && echo "check_radio_versions.py disabled"
-        # Fix Python 2 dict iteration methods in all build tools Python scripts
-        # (iteritems/itervalues/iterkeys removed in Python 3)
-        find twrp_source/build/tools -name "*.py" -exec sed -i \
+        # Fix Python 2 dict iteration methods in all build/tools Python scripts
+        # Using xargs instead of find -exec to avoid \; YAML escaping issues
+        echo "=== Files to patch ==="
+        find twrp_source/build/tools -name "*.py" | sort
+        find twrp_source/build/tools -name "*.py" -print0 | xargs -0 sed -i \
           -e 's/\.iteritems()/.items()/g' \
           -e 's/\.itervalues()/.values()/g' \
-          -e 's/\.iterkeys()/.keys()/g' \
-          {} \;
-        echo "Python 2 dict methods patched in build/tools"
+          -e 's/\.iterkeys()/.keys()/g'
+        # Verify the key file is clean
+        if grep -q "iteritems\|itervalues\|iterkeys" twrp_source/build/tools/post_process_props.py 2>/dev/null; then
+          echo "ERROR: post_process_props.py still has Python 2 dict methods!"
+          grep -n "iteritems\|itervalues\|iterkeys" twrp_source/build/tools/post_process_props.py
+          exit 1
+        fi
+        echo "=== post_process_props.py patched OK ==="
 
     - name: Copy device tree into source
       run: |
