@@ -55,6 +55,7 @@ jobs:
           vendor/omni/build/tools/roomservice.py
 
     - name: Fix Soong clang config for Ubuntu 22.04
+      shell: bash
       run: |
         cd twrp_source
         # Fix readonly variable error in Ubuntu 22.04 + TWRP 8.1
@@ -72,6 +73,7 @@ jobs:
         ls twrp_source/device/lenovo/blueberry/
 
     - name: Build TWRP recovery
+      shell: bash
       run: |
         cd twrp_source
         export ALLOW_MISSING_DEPENDENCIES=true
