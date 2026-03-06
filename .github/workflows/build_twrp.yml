@@ -30,7 +30,11 @@ jobs:
           git gnupg gperf lib32ncurses5-dev lib32readline-dev lib32z1-dev \
           liblz4-tool libncurses5 libncurses5-dev libsdl1.2-dev libssl-dev libxml2 \
           libxml2-utils lzop pngcrush rsync schedtool squashfs-tools \
-          xsltproc zip zlib1g-dev python3 openjdk-8-jdk python-is-python3
+          xsltproc zip zlib1g-dev python3 python2 python-is-python2 openjdk-8-jdk
+        # TWRP 8.1 build scripts are Python 2 - set python -> python2
+        # repo uses its own python3 shebang so this doesn't affect it
+        python --version
+        python3 --version
         update-java-alternatives --set java-1.8.0-openjdk-amd64
         java -version
         curl -s https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo
