@@ -13,8 +13,6 @@ jobs:
     steps:
     - name: Checkout device tree
       uses: actions/checkout@v4
-      with:
-        path: device/lenovo/blueberry
 
     - name: Install dependencies
       run: |
@@ -24,21 +22,22 @@ jobs:
           git gnupg gperf lib32ncurses5-dev lib32readline-dev lib32z1-dev \
           liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 \
           libxml2-utils lzop pngcrush rsync schedtool squashfs-tools \
-          xsltproc zip zlib1g-dev python2 openjdk-11-jdk repo
+          xsltproc zip zlib1g-dev python2 python-is-python2 openjdk-11-jdk
+        # Installer repo
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        echo "$HOME/bin" >> $GITHUB_PATH
 
     - name: Configure git
       run: |
         git config --global user.email "build@github.com"
         git config --global user.name "GitHub Actions"
 
-    - name: Init TWRP manifest
+    - name: Init TWRP 8.1 manifest
       run: |
-        mkdir twrp_source && cd twrp_source
+        mkdir -p twrp_source && cd twrp_source
         repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git \
           -b twrp-8.1 --depth=1
-        # Fix roomservice.py Python 3 compatibility
-        sed -i 's/except IOError, ES.ParseError:/except (IOError, ES.ParseError):/' \
-          .repo/manifests/../manifest.xml 2>/dev/null || true
 
     - name: Sync TWRP source
       run: |
@@ -49,16 +48,13 @@ jobs:
       run: |
         cd twrp_source
         sed -i 's/except IOError, ES.ParseError:/except (IOError, ES.ParseError):/' \
-          vendor/omni/build/tools/roomservice.py || true
+          vendor/omni/build/tools/roomservice.py
 
-    - name: Copy device tree
+    - name: Copy device tree into source
       run: |
-        cp -r device/lenovo/blueberry twrp_source/device/lenovo/blueberry
-
-    - name: Download prebuilt kernel from device backup
-      run: |
-        # Le kernel est dans le repo, dans le dossier prebuilt
-        ls twrp_source/device/lenovo/blueberry/prebuilt/
+        mkdir -p twrp_source/device/lenovo/blueberry
+        cp -r ./* twrp_source/device/lenovo/blueberry/ || true
+        ls twrp_source/device/lenovo/blueberry/
 
     - name: Build TWRP recovery
       run: |
@@ -66,12 +62,12 @@ jobs:
         export ALLOW_MISSING_DEPENDENCIES=true
         source build/envsetup.sh
         lunch omni_blueberry-eng
-        mka bootimage -j$(nproc)
+        mka -j$(nproc) bootimage
 
-    - name: Upload recovery image
+    - name: Upload recovery (boot) image
       uses: actions/upload-artifact@v4
       with:
-        name: twrp-blueberry
+        name: twrp-blueberry-recovery
         path: |
           twrp_source/out/target/product/blueberry/boot.img
           twrp_source/out/target/product/blueberry/recovery.img
