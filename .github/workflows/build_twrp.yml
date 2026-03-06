@@ -68,7 +68,7 @@ jobs:
     - name: Copy device tree into source
       run: |
         mkdir -p twrp_source/device/lenovo/blueberry
-        rsync -a --exclude='.git' --exclude='.github' ./ twrp_source/device/lenovo/blueberry/
+        rsync -a --exclude='.git' --exclude='.github' --exclude='twrp_source' ./ twrp_source/device/lenovo/blueberry/
         ls twrp_source/device/lenovo/blueberry/
 
     - name: Build TWRP recovery
