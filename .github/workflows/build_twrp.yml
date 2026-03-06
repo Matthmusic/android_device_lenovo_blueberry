@@ -57,14 +57,14 @@ jobs:
         cd twrp_source
         repo sync -c -j$(nproc) --force-sync --no-tags --no-clone-bundle
 
-    - name: Fix roomservice.py for Python 3
+    - name: Disable roomservice.py (device tree already in place)
       run: |
         ROOMSERVICE="twrp_source/vendor/omni/build/tools/roomservice.py"
         if [ -f "$ROOMSERVICE" ]; then
-          sed -i 's/except IOError, ES.ParseError:/except (IOError, ES.ParseError):/' "$ROOMSERVICE"
-          echo "roomservice.py patched OK"
+          printf '#!/usr/bin/env python3\nimport sys\nsys.exit(0)\n' > "$ROOMSERVICE"
+          echo "roomservice.py disabled OK"
         else
-          echo "roomservice.py not found at $ROOMSERVICE, skipping"
+          echo "roomservice.py not found, skipping"
         fi
 
     - name: Copy device tree into source
