@@ -57,15 +57,15 @@ jobs:
         cd twrp_source
         repo sync -c -j$(nproc) --force-sync --no-tags --no-clone-bundle
 
-    - name: Disable roomservice.py (device tree already in place)
+    - name: Fix Python 2 build scripts
       run: |
+        NOOP='#!/usr/bin/env python3\nimport sys\nsys.exit(0)\n'
+        # roomservice.py: device tree already present, no need to fetch from Gerrit
         ROOMSERVICE="twrp_source/vendor/omni/build/tools/roomservice.py"
-        if [ -f "$ROOMSERVICE" ]; then
-          printf '#!/usr/bin/env python3\nimport sys\nsys.exit(0)\n' > "$ROOMSERVICE"
-          echo "roomservice.py disabled OK"
-        else
-          echo "roomservice.py not found, skipping"
-        fi
+        [ -f "$ROOMSERVICE" ] && printf "$NOOP" > "$ROOMSERVICE" && echo "roomservice.py disabled"
+        # check_radio_versions.py: Python 2 print syntax, no radio images needed for recovery
+        CHECKRADIO="twrp_source/build/tools/check_radio_versions.py"
+        [ -f "$CHECKRADIO" ] && printf "$NOOP" > "$CHECKRADIO" && echo "check_radio_versions.py disabled"
 
     - name: Copy device tree into source
       run: |
