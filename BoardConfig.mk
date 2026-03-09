@@ -48,15 +48,14 @@ TARGET_RECOVERY_FSTAB := device/lenovo/blueberry/recovery.fstab
 # Display - panel HX83100A 800x1280 portrait rotation 270
 TW_THEME := portrait_hdpi
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-TW_ROTATION := 270
+TW_ROTATION := 0
 TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight/brightness"
 TW_MAX_BRIGHTNESS := 255
 TW_DEFAULT_BRIGHTNESS := 128
 TW_SCREEN_BLANK_ON_BOOT := true
 
 # TWRP
-TW_DEVICE_VERSION := 1
-TW_EXCLUDE_DEFAULT_USB_INIT := true
+TW_DEVICE_VERSION := 2
 TW_INCLUDE_NTFS_3G := true
 TW_INCLUDE_REPACKTOOLS := true
 TARGET_USES_MKE2FS := true
