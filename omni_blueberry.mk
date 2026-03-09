@@ -6,6 +6,9 @@ PRODUCT_BRAND := Lenovo
 PRODUCT_MODEL := Lenovo Smart Display 10
 PRODUCT_MANUFACTURER := Lenovo
 
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/init.recovery.msm8x53.rc:root/init.recovery.msm8x53.rc
+
 PRODUCT_PACKAGES += \
     e2fsck_static
 
