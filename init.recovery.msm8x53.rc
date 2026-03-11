@@ -8,6 +8,10 @@ on init
     # an immediate system reboot on any MDSS warning, giving a black screen.
     write /proc/sys/kernel/panic_on_oops 0
 
+on boot
+    # Force the recovery USB gadget up so headless boots stay debuggable.
+    setprop sys.usb.config adb
+
 on fs
     # This kernel uses USB ConfigFS (CONFIG_USB_CONFIGFS=y), NOT the legacy
     # android_usb gadget interface. Configure ADB over ConfigFS.
